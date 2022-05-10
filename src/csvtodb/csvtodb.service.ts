@@ -5,12 +5,11 @@ import * as csv from 'csvtojson';
 
 @Injectable()
 export class CsvtodbService {
-  async saveCsvToDb() {
+  async saveCsvToDb(filePath) {
     const conn = DbConection._db;
     const userModel = await conn.model('users', UserSchema);
-    const csvFilePath = 'data.csv';
-    const jsonArray = await csv().fromFile(csvFilePath);
+    const jsonArray = await csv().fromFile(filePath);
     await userModel.insertMany(jsonArray);
-    console.log('done');
+    return 'file uploading done';
   }
 }
