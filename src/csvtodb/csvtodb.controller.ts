@@ -18,6 +18,12 @@ export class CsvtodbController {
   @Post('upload')
   @UseInterceptors(AnyFilesInterceptor())
   uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-    return this.csvtodbService.saveCsvToDb(files[0].path);
+    return this.csvtodbService.saveCsvToDb(
+      files[0].path,
+      function (err, result) {
+        if (err) return err;
+        return result;
+      },
+    );
   }
 }
