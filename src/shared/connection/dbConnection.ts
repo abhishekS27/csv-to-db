@@ -22,7 +22,9 @@ export class DbConection {
   }
   private static async createConnection() {
     try {
-      return await mongoose.connect('mongodb://localhost:27017/uber');
+      return await mongoose.connect(
+        'mongodb+srv://sajan:qkU1w2NfJWHva8iH@cul-free-proj.huimb.mongodb.net/sajan?retryWrites=true&w=majority',
+      );
     } catch (err) {
       console.log('Error While Connecting To Database');
     }

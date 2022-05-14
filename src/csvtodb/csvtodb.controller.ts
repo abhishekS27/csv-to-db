@@ -15,6 +15,11 @@ import * as multer from 'multer';
 export class CsvtodbController {
   constructor(private readonly csvtodbService: CsvtodbService) {}
 
+  @Get('data')
+  getAllData() {
+    return this.csvtodbService.getAllData();
+  }
+
   @Post('upload')
   @UseInterceptors(AnyFilesInterceptor())
   uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
