@@ -7,19 +7,27 @@ import * as csv from 'csvtojson';
 export class CsvtodbService {
   async saveCsvToDb(filePath, cb) {
     try {
-      const connection = DbConection._db;
-      const userModel = await connection.model('users', UserSchema);
+      const model = await this.model();
       const jsonArray = await csv().fromFile(filePath);
-      await userModel.insertMany(jsonArray);
+      await model.insertMany(jsonArray);
       return cb(null, { success: true, result: 'file uploading done' });
     } catch (err) {
       return cb({ success: false, info: 'Error While Uploading File' });
     }
   }
 
-  async getAllData() {
+  async userList(skip, limit, cb) {
+    try {
+      const model = await this.model();
+      const result = await model.find().skip(skip).limit(limit);
+      return cb(null, { success: true, result: result });
+    } catch (err) {
+      return cb({ success: false, info: 'Error While Get Users' });
+    }
+  }
+
+  async model() {
     const connection = DbConection._db;
-    const userModel = await connection.model('users', UserSchema);
-    return await userModel.find();
+    return connection.model('users', UserSchema);
   }
 }

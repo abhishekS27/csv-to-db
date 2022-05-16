@@ -1,23 +1,26 @@
 import {
-  Body,
   Controller,
   Get,
   Post,
-  UploadedFile,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CsvtodbService } from './csvtodb.service';
-import * as multer from 'multer';
 
 @Controller('csvtodb')
 export class CsvtodbController {
   constructor(private readonly csvtodbService: CsvtodbService) {}
 
-  @Get('data')
-  getAllData() {
-    return this.csvtodbService.getAllData();
+  @Get()
+  user(@Query('skip') skip, @Query('limit') limit) {
+    if ((skip == 0 && limit == 0) || skip > limit)
+      return 'Skip is not equal to limit and greater than limit';
+    return this.csvtodbService.userList(skip, limit, (err, result) => {
+      if (err) return err;
+      return result;
+    });
   }
 
   @Post('upload')
