@@ -5,9 +5,9 @@ import * as csv from 'csvtojson';
 
 @Injectable()
 export class CsvtodbService {
-  async saveCsvToDb(filePath, cb) {
+  async saveCsvToDb(dbName, filePath, cb) {
     try {
-      const model = await this.model();
+      const model = await this.model(dbName);
       const jsonArray = await csv().fromFile(filePath);
       await model.insertMany(jsonArray);
       return cb(null, { success: true, result: 'file uploading done' });
@@ -16,18 +16,20 @@ export class CsvtodbService {
     }
   }
 
-  async userList(skip, limit, cb) {
+  async userList(dbName, skip, limit, cb) {
     try {
-      const model = await this.model();
+      const model = await this.model(dbName);
       const result = await model.find().skip(skip).limit(limit);
+      if (result.length == 0)
+        return cb({ success: false, info: 'No data found' });
       return cb(null, { success: true, result: result });
     } catch (err) {
       return cb({ success: false, info: 'Error While Get Users' });
     }
   }
 
-  async model() {
-    const connection = DbConection._db;
+  async model(dbName) {
+    const connection = await DbConection.changeDb(dbName);
     return connection.model('users', UserSchema);
   }
 }

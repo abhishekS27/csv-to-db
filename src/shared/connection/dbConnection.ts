@@ -2,6 +2,9 @@ import * as mongoose from 'mongoose';
 
 export class DbConection {
   static _db: mongoose.Connection;
+  static async changeDb(clientName: string) {
+    return await DbConection._db.useDb(clientName, { useCache: true });
+  }
 
   static async connect() {
     try {
