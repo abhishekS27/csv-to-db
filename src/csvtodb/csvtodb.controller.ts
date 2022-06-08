@@ -9,8 +9,9 @@ import {
   UseInterceptors,
   Param,
   Body,
+  UploadedFile,
 } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { CsvtodbService } from './csvtodb.service';
 
 @Controller('csvtodb')
@@ -38,15 +39,16 @@ export class CsvtodbController {
   }
 
   @Post('upload')
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(FileInterceptor('data'))
   async uploadFile(
     @Headers('subdomain') dbName,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     if (!dbName) return 'Kindly provide subdomain';
+    if (file.mimetype != 'text/csv') return 'kindly provide csv';
     return this.csvtodbService.saveCsvToDb(
       dbName,
-      files[0].path,
+      file.path,
       function (err, result) {
         if (err) return err;
         return result;

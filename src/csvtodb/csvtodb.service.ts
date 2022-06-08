@@ -10,12 +10,40 @@ export class CsvtodbService {
     try {
       const model = await this.model(dbName);
       const jsonArray = await csv().fromFile(filePath);
-      await model.insertMany(jsonArray);
+      const uniCodeAddedJsonArray = this.addUniCode(jsonArray);
+      await model.insertMany(uniCodeAddedJsonArray);
       await fs.unlinkSync(`${filePath}`);
       return cb(null, { success: true, result: 'file uploading done' });
     } catch (err) {
       return cb({ success: false, info: 'Error While Uploading File' });
     }
+  }
+
+  addUniCode(jsonArray) {
+    const unicodeAddedJsonArray = [];
+    for (let i = 0; i < jsonArray.length; i++) {
+      const element = jsonArray[i];
+      element['unicode'] = this.randomUniCodeGenerator();
+      unicodeAddedJsonArray.push(element);
+    }
+    return unicodeAddedJsonArray;
+  }
+
+  randomUniCodeGenerator() {
+    const chars = this.shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
+      .join('')
+      .slice(0, 3);
+    const number = this.shuffle('0123456789'.split('')).join('').slice(0, 3);
+    return chars + number;
+  }
+
+  shuffle(o) {
+    for (
+      let j, x, i = o.length;
+      i;
+      j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x
+    );
+    return o;
   }
 
   async userList(dbName, skip, limit, cb) {
