@@ -5,13 +5,12 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFiles,
   UseInterceptors,
   Param,
   Body,
   UploadedFile,
 } from '@nestjs/common';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CsvtodbService } from './csvtodb.service';
 
 @Controller('csvtodb')
