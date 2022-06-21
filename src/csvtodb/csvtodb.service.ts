@@ -84,7 +84,6 @@ export class CsvtodbService {
       const versioningModel = await this.model(dbName, 'versioning');
       const doc = new versioningModel(result);
       const create = await doc.save();
-      if (result == null) return cb({ success: false, info: 'No data found' });
       return cb(null, { success: true, result: create });
     } catch (err) {
       return cb({ success: false, info: 'Error While updating verify' });
