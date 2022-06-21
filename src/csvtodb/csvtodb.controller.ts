@@ -9,6 +9,7 @@ import {
   Param,
   Body,
   UploadedFile,
+  Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CsvtodbService } from './csvtodb.service';
@@ -59,6 +60,20 @@ export class CsvtodbController {
   async verify(@Headers('subdomain') dbName, @Param() { id }, @Body() post) {
     if (!dbName) return 'Kindly provide subdomain';
     return this.csvtodbService.findByIdAndUpdate(
+      dbName,
+      id,
+      post,
+      function (err, result) {
+        if (err) return err;
+        return result;
+      },
+    );
+  }
+
+  @Put(':id')
+  async update(@Headers('subdomain') dbName, @Param() { id }, @Body() post) {
+    if (!dbName) return 'Kindly provide subdomain';
+    return this.csvtodbService.updateVersion(
       dbName,
       id,
       post,

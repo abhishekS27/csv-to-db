@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DbConection } from '../shared/connection/dbConnection';
 import { UserSchema } from './schema/user.schema';
+import { VersionSchema } from './schema/versioning.schema';
 import * as csv from 'csvtojson';
 import * as fs from 'fs';
 
@@ -73,8 +74,29 @@ export class CsvtodbService {
     }
   }
 
-  async model(dbName) {
+  async updateVersion(dbName, id, post, cb) {
+    try {
+      const model = await this.model(dbName);
+      post['__v']++;
+      const result = await model.findByIdAndUpdate(id, { $set: post }).lean();
+      result['parentId'] = result['_id'];
+      delete result['_id'];
+      const versioningModel = await this.model(dbName, 'versioning');
+      const doc = new versioningModel(result);
+      const create = await doc.save();
+      if (result == null) return cb({ success: false, info: 'No data found' });
+      return cb(null, { success: true, result: create });
+    } catch (err) {
+      return cb({ success: false, info: 'Error While updating verify' });
+    }
+  }
+
+  async model(dbName, collectionName?) {
     const connection = await DbConection.changeDb(dbName);
-    return connection.model('users', UserSchema);
+    if (collectionName) {
+      return connection.model(collectionName, VersionSchema);
+    } else {
+      return connection.model('users', UserSchema);
+    }
   }
 }
