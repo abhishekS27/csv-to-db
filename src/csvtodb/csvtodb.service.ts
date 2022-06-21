@@ -74,11 +74,11 @@ export class CsvtodbService {
     }
   }
 
-  async updateVersion(dbName, id, post, cb) {
+  async updateVersion(dbName, id, body, cb) {
     try {
       const model = await this.model(dbName);
-      post['__v']++;
-      const result = await model.findByIdAndUpdate(id, { $set: post }).lean();
+      body['__v']++;
+      const result = await model.findByIdAndUpdate(id, { $set: body }).lean();
       result['parentId'] = result['_id'];
       delete result['_id'];
       const versioningModel = await this.model(dbName, 'versioning');
